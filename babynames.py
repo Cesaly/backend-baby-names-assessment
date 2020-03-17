@@ -30,16 +30,15 @@ def extract_names(filename):
     year = year_match.group(1)
     names.append(year)
 
-    tuples = re.findall(r'<td>(\d+)</td><td>(\w+)</td><\td>(\w+)<\td>')
+    tuples = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', text)
 
     names_to_rank = {}
-    for rank_tuple in tuples:
-        (rank, boyname, girlname) = rank_tuple
-    if boyname not in names_to_rank:
-        names_to_rank[boyname] = rank
-    if girlname not in names_to_rank:
-        names_to_rank[girlname] = rank
-
+    for rank, boyname, girlname in tuples:
+        if boyname not in names_to_rank:
+            names_to_rank[boyname] = rank
+        if girlname not in names_to_rank:
+            names_to_rank[girlname] = rank
+      
     sorted_names = sorted(names_to_rank.keys())
 
     for name in sorted_names:
@@ -70,17 +69,15 @@ def main(args):
         sys.exit(1)
 
     file_list = ns.files
-
-    # option flag
     create_summary = ns.summaryfile
 
-    # For each filename, call `extract_names` with that single file.
-    # Format the resulting list a vertical list (separated by newline \n)
-    # Use the create_summary flag to decide whether to print the list,
-    # or to write the list to a summary file e.g. `baby1990.html.summary`
-
-    # +++your code here+++
-
-
+    for file in file_list:
+        name_list = extract_names(file)
+        text = '\n'.join(name_list)
+        if create_summary:
+            with open(file + '.summary', 'w') as f:
+                f.write(text)  
+        print(text)
+   
 if __name__ == '__main__':
     main(sys.argv[1:])
